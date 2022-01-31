@@ -339,8 +339,8 @@ mod tests {
         fanout.add(ComponentKey::from("b"), Box::pin(tx_b));
         fanout.add(ComponentKey::from("c"), Box::pin(tx_c));
 
-        let recs = make_events(3);
-        let send = stream::iter(vec![Ok(recs.clone())]).forward(fanout);
+        let recs = make_events_flat(3);
+        let send = stream::iter(recs.clone()).map(Ok).forward(fanout);
         tokio::spawn(send);
 
         sleep(Duration::from_millis(50)).await;
@@ -353,7 +353,7 @@ mod tests {
         let collect_b = tokio::spawn(rx_b.collect::<Vec<_>>());
         let collect_c = tokio::spawn(rx_c.collect::<Vec<_>>());
 
-        let recs: Vec<Event> = recs.into_events().collect();
+        let recs: Vec<Event> = flatten(recs);
         assert_eq!(flatten(collect_a.await.unwrap()), recs);
         assert_eq!(flatten(collect_b.await.unwrap()), recs);
         assert_eq!(flatten(collect_c.await.unwrap()), &recs[..1]);
@@ -371,8 +371,8 @@ mod tests {
         fanout.add(ComponentKey::from("b"), Box::pin(tx_b));
         fanout.add(ComponentKey::from("c"), Box::pin(tx_c));
 
-        let recs = make_events(3);
-        let send = stream::iter(vec![Ok(recs.clone())]).forward(fanout);
+        let recs = make_events_flat(3);
+        let send = stream::iter(recs.clone()).map(Ok).forward(fanout);
         tokio::spawn(send);
 
         sleep(Duration::from_millis(50)).await;
@@ -385,7 +385,7 @@ mod tests {
         let collect_b = tokio::spawn(rx_b.collect::<Vec<_>>());
         let collect_c = tokio::spawn(rx_c.collect::<Vec<_>>());
 
-        let recs: Vec<Event> = recs.into_events().collect();
+        let recs: Vec<Event> = flatten(recs);
         assert_eq!(flatten(collect_a.await.unwrap()), recs);
         assert_eq!(flatten(collect_b.await.unwrap()), &recs[..1]);
         assert_eq!(flatten(collect_c.await.unwrap()), recs);
@@ -403,8 +403,8 @@ mod tests {
         fanout.add(ComponentKey::from("b"), Box::pin(tx_b));
         fanout.add(ComponentKey::from("c"), Box::pin(tx_c));
 
-        let recs = make_events(3);
-        let send = stream::iter(vec![Ok(recs.clone())]).forward(fanout);
+        let recs = make_events_flat(3);
+        let send = stream::iter(recs.clone()).map(Ok).forward(fanout);
         tokio::spawn(send);
 
         sleep(Duration::from_millis(50)).await;
@@ -418,7 +418,7 @@ mod tests {
         let collect_b = tokio::spawn(rx_b.collect::<Vec<_>>());
         let collect_c = tokio::spawn(rx_c.collect::<Vec<_>>());
 
-        let recs: Vec<Event> = recs.into_events().collect();
+        let recs: Vec<Event> = flatten(recs);
         assert_eq!(flatten(collect_a.await.unwrap()), &recs[..1]);
         assert_eq!(flatten(collect_b.await.unwrap()), recs);
         assert_eq!(flatten(collect_c.await.unwrap()), recs);
@@ -615,6 +615,12 @@ mod tests {
                 _ => Ok(()),
             })
         }
+    }
+
+    fn make_events_flat(count: usize) -> Vec<EventArray> {
+        (0..count)
+            .map(|i| EventArray::from(vec![LogEvent::from(format!("line {}", i))]))
+            .collect()
     }
 
     fn make_events(count: usize) -> EventArray {
