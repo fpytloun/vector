@@ -1,8 +1,5 @@
-use crate::{
-    codecs::encoding::{BoxedSerializer, Serializer, SerializerConfig},
-    config::log_schema,
-    event::Event,
-};
+use super::{BoxedSerializer, Serializer, SerializerConfig};
+use crate::{config::log_schema, event::Event};
 use bytes::BufMut;
 use serde::{Deserialize, Serialize};
 
