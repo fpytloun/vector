@@ -36,7 +36,6 @@ impl InternalEvent for FileBytesSent<'_> {
         counter!(
             "component_sent_bytes_total", self.byte_size as u64,
             "protocol" => "file",
-            "file" => self.file.clone().into_owned(),
         );
     }
 }
@@ -105,7 +104,6 @@ mod source {
             counter!(
                 "component_received_bytes_total", self.byte_size as u64,
                 "protocol" => "file",
-                "file" => self.file.to_owned()
             );
         }
     }
@@ -127,15 +125,12 @@ mod source {
             );
             counter!(
                 "events_in_total", self.count as u64,
-                "file" => self.file.to_owned(),
             );
             counter!(
                 "component_received_events_total", self.count as u64,
-                "file" => self.file.to_owned(),
             );
             counter!(
                 "component_received_event_bytes_total", self.byte_size as u64,
-                "file" => self.file.to_owned(),
             );
         }
     }
@@ -153,7 +148,6 @@ mod source {
             );
             counter!(
                 "checksum_errors_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
@@ -180,12 +174,10 @@ mod source {
                 "error_code" => "reading_fingerprint",
                 "error_type" => error_type::READER_FAILED,
                 "stage" => error_stage::RECEIVING,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
             // deprecated
             counter!(
                 "fingerprint_read_errors_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
@@ -211,7 +203,6 @@ mod source {
             );
             counter!(
                 "component_errors_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
                 "error_code" => DELETION_FAILED,
                 "error_type" => error_type::COMMAND_FAILED,
                 "stage" => error_stage::RECEIVING,
@@ -219,7 +210,6 @@ mod source {
             // deprecated
             counter!(
                 "file_delete_errors_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
@@ -237,7 +227,6 @@ mod source {
             );
             counter!(
                 "files_deleted_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
@@ -255,7 +244,6 @@ mod source {
             );
             counter!(
                 "files_unwatched_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
@@ -282,12 +270,10 @@ mod source {
                 "error_code" => "watching",
                 "error_type" => error_type::COMMAND_FAILED,
                 "stage" => error_stage::RECEIVING,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
             // deprecated
             counter!(
                 "file_watch_errors_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
@@ -307,7 +293,6 @@ mod source {
             );
             counter!(
                 "files_resumed_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
@@ -325,7 +310,6 @@ mod source {
             );
             counter!(
                 "files_added_total", 1,
-                "file" => self.file.to_string_lossy().into_owned(),
             );
         }
     }
